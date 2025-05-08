@@ -15,7 +15,9 @@ pub fn run_two (config: Config) -> Result<(), Box<dyn Error>> {
     let result = if config.ignore_case {
         search_case_insensitive(&config.query_str, &content)
     } else {
-        search_case_sensitive(&config.query_str, &content)
+        // search_case_sensitive(&config.query_str, &content)
+        search_case_sensitive_two(&config.query_str, &content)
+
     };
     for line in result {
         println!("匹配行：{line}")
@@ -80,6 +82,25 @@ impl Config {
         };
         Ok(Config {query_str, file_path, ignore_case})
     }
+    pub fn build_four(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
+        args.next();
+        let query_str = match args.next() {
+            Some(value) => value,
+            None => return Err("query_str not exist!") 
+        };
+        let file_path = match args.next() {
+            Some(value) => value,
+            None => return Err("file_path not exist!") 
+        };
+        let ignore_case = match env::var("IGNORE_CASE") {
+            Ok(value) => value == "1", 
+            Err(_) => match args.next() {
+                Some(value) => value == "-i",
+                None => false,
+            },
+        };
+        Ok(Config {query_str, file_path, ignore_case})
+    }
 }
 
 pub fn search_case_sensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
@@ -90,6 +111,12 @@ pub fn search_case_sensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str>
         }
     }
     result
+}
+pub fn search_case_sensitive_two<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
 }
 
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {

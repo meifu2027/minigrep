@@ -4,7 +4,7 @@ use minigrep::Config;
 use std::process;
 
 fn main() {
-    let args: Vec<String> =  env::args().collect();
+    // let args: Vec<String> =  env::args().collect();
     // dbg!(args);
     // let query_str = args[1].clone();
     // let file_path = args[2].clone();
@@ -13,8 +13,9 @@ fn main() {
     // let config = Config::new(&args);
     // let config = Config::build_one(&args);
     // let config = Config::build_two(&args).unwrap_or_else(|err| {
-        let config = Config::build_three(&args).unwrap_or_else(|err| {
-        println!("error msg: {}", err);
+        // let config = Config::build_three(&args).unwrap_or_else(|err| {
+        let config = Config::build_four(env::args()).unwrap_or_else(|err| {
+        eprintln!("error msg: {}", err);
         process::exit(1)
     });
     // println!("query_str: {}\nfile_path: {} \n",config.query_str, config.file_path);
@@ -25,7 +26,7 @@ fn main() {
     //     process::exit(1)
     // });
     if let Err(err) = minigrep::run_two(config) {
-        println!("错误信息:\n{err}");
+        eprintln!("错误信息:\n{err}");
         process::exit(1)
     };
     // test commit
